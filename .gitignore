@@ -1,0 +1,6 @@
+conexao copy.py
+
+.venv/
+.env
+
+__pycache__
