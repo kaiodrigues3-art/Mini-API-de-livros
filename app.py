@@ -25,7 +25,10 @@ def listar_livros():
 def consultar(id):
     try:
         livros = consulta(dados_conexao, id)
-        return livros
+        if livros == None:
+            return jsonify({'erro': 'Este livro não existe'})
+        else:
+            return livros
     except Exception as erro:
         return jsonify({'erro': str(erro)})
 
@@ -52,19 +55,39 @@ def cadastrar():
 
 @app.route('/excluir/<int:id>', methods=['DELETE'])
 def excluir_livro(id):
-    excluir(dados_conexao, id)
-    return 'Livro excluído com sucesso!'
+    try:
+        teste = consulta(dados_conexao, id)
+        if teste == None:
+            return jsonify({'erro': 'O livro selecionado não existe'})
+        else:
+            excluir(dados_conexao, id)
+            return 'Livro excluído com sucesso!'
+    except Exception as erro:
+        return jsonify({'Erro': str(erro)})
 
 
 @app.route('/livros', methods=['PUT'])
 def editar():
     dados = request.get_json()
+    if not isinstance(dados, dict):
+        return jsonify({'erro': 'O corpo da requisição deve ser válido <400>'})
+    if 'titulo' not in dados:
+        return jsonify({'erro': 'Você não digitou o título <400>'})
+    if 'autor' not in dados:
+        return jsonify({'erro': 'Você não digitou o autor <400>'})
+    if 'id' not in dados:
+        return jsonify({'erro': 'Você não digitou o id <400>'})
     titulo = dados['titulo']
     autor = dados['autor']
     id = dados['id']
-    editar_porid(dados_conexao, id, titulo, autor)
-    return 'Livro editado com sucesso!'
-
+    teste = consulta(dados_conexao, id)
+    if teste == None:
+        return jsonify({'erro': 'O livro selecionado não existe'})
+    try:
+        editar_porid(dados_conexao, id, titulo, autor)
+        return 'Livro editado com sucesso!'
+    except Exception as erro:
+        return jsonify({'erro': str(erro)})
 
 
 

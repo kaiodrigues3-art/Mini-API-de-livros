@@ -32,9 +32,10 @@ def cadastrar_livro(dados_conexao, titulo, autor):
             conexao.close()
     except pyodbc.Error as erro:
         print(f'Erro no banco de dados {erro}')
+        return jsonify({'erro': str(erro)})
     except Exception as erro:
         print(f'Erro inesperado, código -> {erro}')
-
+        return jsonify({'erro': str(erro)})
 
 def listar(dados_conexao):
     try:
@@ -63,6 +64,8 @@ def consulta(dados_conexao, id):
             cursor = conexao.cursor()
             cursor.execute("SELECT * FROM llivros where id = ?", (id,))
             dados = cursor.fetchall()
+            if not dados:
+                return None
             colunas = []
             for c in cursor.description:
                 colunas.append(c[0])
@@ -95,12 +98,12 @@ def excluir(dados_conexao, id):
         return jsonify({'erro': str(erro)}), 500
         
 
-def editar_porid(dados_conexao, id, nome, autor):
+def editar_porid(dados_conexao, id, titulo, autor):
     try:
         with pyodbc.connect(dados_conexao) as conexao:
             print('Conectado com sucesso')
             cursor = conexao.cursor()
-            cursor.execute("update llivros set titulo = ?, autor = ? where id = ?", (nome, autor, id))
+            cursor.execute("update llivros set titulo = ?, autor = ? where id = ?", (titulo, autor, id))
             conexao.commit()
     except pyodbc.Error as erro:
         print('Erro no banco de dados')
