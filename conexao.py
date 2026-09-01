@@ -24,12 +24,12 @@ def cadastrar_livro(dados_conexao, titulo, autor):
         with pyodbc.connect(dados_conexao) as conexao:
             print('Conectado com sucesso!')
             cursor = conexao.cursor()
-            comando = f"""insert into llivros(titulo, autor)
+            comando = """insert into llivros(titulo, autor)
             values
             (?, ?)"""
             cursor.execute(comando, (titulo, autor))
             conexao.commit()
-            conexao.close()
+            return True
     except pyodbc.Error as erro:
         print(f'Erro no banco de dados {erro}')
         return jsonify({'erro': str(erro)})
@@ -90,6 +90,8 @@ def excluir(dados_conexao, id):
             comando = "delete from llivros where id = ?;"
             cursor.execute(comando, (id,))
             conexao.commit()
+            c = cursor.rowcount
+            return c
     except pyodbc.Error as erro:
         print('Erro no banco de dados')
         return jsonify({'erro': str(erro)}), 500
@@ -105,6 +107,8 @@ def editar_porid(dados_conexao, id, titulo, autor):
             cursor = conexao.cursor()
             cursor.execute("update llivros set titulo = ?, autor = ? where id = ?", (titulo, autor, id))
             conexao.commit()
+            c = cursor.rowcount
+            return c
     except pyodbc.Error as erro:
         print('Erro no banco de dados')
         return jsonify({'erro': str(erro)}), 500
@@ -113,3 +117,4 @@ def editar_porid(dados_conexao, id, titulo, autor):
         return jsonify({'erro': str(erro)}), 500
 
 
+excluir(dados_conexao, 999)
