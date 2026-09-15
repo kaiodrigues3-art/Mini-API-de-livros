@@ -1,6 +1,5 @@
 import pyodbc
 import os
-from flask import jsonify
 from dotenv import load_dotenv
 
 
@@ -32,10 +31,11 @@ def cadastrar_livro(dados_conexao, titulo, autor):
             return True
     except pyodbc.Error as erro:
         print(f'Erro no banco de dados {erro}')
-        return jsonify({'erro': str(erro)})
+        raise
     except Exception as erro:
         print(f'Erro inesperado, código -> {erro}')
-        return jsonify({'erro': str(erro)})
+        raise
+
 
 def listar(dados_conexao):
     try:
@@ -48,13 +48,14 @@ def listar(dados_conexao):
             dados_formatados = []
             for l in dados:
                 dados_formatados.append(dict(zip(colunas, l)))
-            return jsonify(dados_formatados)
+            return dados_formatados
     except pyodbc.Error as erro:
-        print('Erro no banco de dados')
-        return jsonify({'erro': str(erro)}), 500
+        print(f'Erro no banco de dados, {erro}')
+        raise
     except Exception as erro:
-        print('Erro geral')
-        return jsonify({'erro': str(erro)}), 500
+        print(f'Erro geral, {erro}')
+        raise
+
     
 
 def consulta(dados_conexao, id):
@@ -73,13 +74,13 @@ def consulta(dados_conexao, id):
             dados_formatados = []
             for l in dados:
                 dados_formatados.append(dict(zip(colunas, l)))
-            return jsonify(dados_formatados)
+            return dados_formatados
     except pyodbc.Error as erro:
-        print('Erro no banco de dados')
-        return jsonify({'erro': str(erro)}), 500
+        print(f'Erro no banco de dados, {erro}')
+        raise
     except Exception as erro:
-        print('Erro geral')
-        return jsonify({'erro': str(erro)}), 500
+        print(f'Erro geral, {erro}')
+        raise
 
     
 def excluir(dados_conexao, id):
@@ -93,11 +94,11 @@ def excluir(dados_conexao, id):
             c = cursor.rowcount
             return c
     except pyodbc.Error as erro:
-        print('Erro no banco de dados')
-        return jsonify({'erro': str(erro)}), 500
+        print(f'Erro no banco de dados, {erro}')
+        raise
     except Exception as erro:
-        print('Erro geral')
-        return jsonify({'erro': str(erro)}), 500
+        print(f'Erro geral {erro}')
+        raise
         
 
 def editar_porid(dados_conexao, id, titulo, autor):
@@ -110,11 +111,8 @@ def editar_porid(dados_conexao, id, titulo, autor):
             c = cursor.rowcount
             return c
     except pyodbc.Error as erro:
-        print('Erro no banco de dados')
-        return jsonify({'erro': str(erro)}), 500
+        print("Erro no banco de dados")
+        raise
     except Exception as erro:
         print('Erro geral')
-        return jsonify({'erro': str(erro)}), 500
-
-
-excluir(dados_conexao, 999)
+        raise
