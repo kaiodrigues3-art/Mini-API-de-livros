@@ -43,6 +43,14 @@ def cadastrar():
         return jsonify({'erro': 'Você não digitou o título'}), 400
     if 'autor' not in dados:
         return jsonify({'erro': 'Você não digitou o autor'}), 400
+    if not isinstance(dados['titulo'], str):
+        return jsonify({'erro': 'Você não digitou o título'})
+    if not isinstance(dados['autor'], str):
+        return jsonify({'erro': 'Você não digitou o autor'})
+    if not dados['titulo'].strip():
+        return jsonify({'erro': 'O titulo não pode estar vazio'}), 400
+    if not dados['autor'].strip():
+        return jsonify({'erro': 'O autor não pode estar vazio'}), 400
     titulo = dados['titulo']
     autor = dados['autor']
     try:
